@@ -24,6 +24,72 @@ main:
 	syscall
 
 
+# ============= SapXepGiamDan =============
+_SapXepGiamDan:
+#Dau thu tuc
+	addi $sp,$sp,-32
+	sw $ra,($sp)
+	sw $s0,4($sp)
+	sw $s1,8($sp)
+	sw $s2,12($sp)
+	sw $t0,16($sp)
+	sw $t1,20($sp)
+	sw $t2,24($sp)
+	sw $t3,28($sp)
+	sw $t4,32($sp)
+	# Lay tham so luu vao thanh ghi
+	move $s0,$a0 #n gia tri
+	move $s1,$a1 #arr
+	move $s2,$a1 #arr
+	move 
+
+#Than thu tuc
+	#Khoi tao vong lap 0
+	li $t0, 0 # i = 0
+	
+_SapXepGiamDan.Loop0:
+	move $s2, $a1 # Reset lai dia chi arr
+	li $t4, 4
+	lw $t2, ($s1) # t2 = arr[i]
+	#Khoi tao vong lap 1
+	addi $t1, $t0, 1 # j = i + 1
+	beq $t1, $s0, _SapXepGiamDan.End
+	mult $t1, $t4
+	mflo $t4
+	add $s2, $s2, $t4 # Tang dia chi s2
+_SapXepGiamDan.Loop1:
+	lw $t3, ($s2) # t3 = arr[j]
+	
+	blt $t2, $t3, _SapXepGiamDan.Skip # Kiem tra arr[i] < arr[j] thi skip
+	# Khong thi swap arr[i] va arr[j]
+	sw $t3, ($s1) # arr[i] = t3
+	sw $t2, ($s2) # arr[j] = t2
+	lw $t2, ($s1) # t2 = arr[i]
+_SapXepGiamDan.Skip:
+	addi $s2, $s2, 4 # Tang dia chi
+	addi $t1, $t1, 1 # Tang j
+	blt $t1, $s0, _SapXepTangDan.Loop1 # Kiem tra j < n thi lap
+	
+	addi $s1, $s1, 4 # Tang dia chi
+	addi $t0, $t0, 1 # Tang i
+	blt $t0, $s0, _SapXepTangDan.Loop0 # Kiem tra i < n thi lap
+_SapXepGiamDan.End:
+#Cuoi thu tuc
+	#restore
+	lw $ra,($sp)
+	lw $s0,4($sp)
+	lw $s1,8($sp)
+	lw $s2,12($sp)
+	lw $t0,16($sp)
+	lw $t1,20($sp)
+	lw $t2,24($sp)
+	lw $t3,28($sp)
+	lw $t4,32($sp)
+	#xoa stack
+	addi $sp,$sp,32
+	# tra ve
+	jr $ra
+
 # ---------------- Doc De Thi ----------------
 # Ket qua tre ve dia chi chuoi de bai luu vao $v0
 # Tham so a0 = Dia chi list_debai, a1 = Dia chi debai
@@ -196,4 +262,46 @@ _XuatTop10.Skip_Count:
 _XuatTop10.Exit_Count:
 	addi $s3, $s3, 1 # n dau '*' thi co n + 1 nguoi choi
 	
+	# Rut trich diem so
+	li $t0, 0 # Khoi tao count'-'
+	li $t1, 0
+	li $t2, 10
+_XuatTop10.Loop1:
+	lb $t3, ($s0)
+	bne $t3, '*', _XuatTop10.LoadNumSkip # Kiem tra t1 != '*' thi Skip
+	# Khong thi dua du lieu vao list_diemso_ngchoi
+	div $t1, $t2
+	mflo $t1
+	sw $t1, ($s2)
+	addi $s2, $s2, 4 # Tang dia chi
+	li $t1, 0 # Reset $s2
+_XuatTop10.LoadNumSkip:
+	beqz $t3, _XuatTop10.Exit # Kiem tra t1 == '\0' thi Exit
+	
+	bne $t3, '-', _XuatTop10.CountHyphenSkip # Kiem tra t1 != '-' thi Skip
+	# Khong thi tang dem '-' va tang dia chi
+	addi $t0, $t0, 1
+	bne $t0, 1, _XuatTop10.GetNumSkip # Kiem tra count'-' != 1 thi Skip
+	# Khong thi tang dia chi
+	addi $s0, $s0, 1 # Tang dia chi de vuot qua dau '-' lan dau tien
+	lb $t3, ($s0)
+_XuatTop10.CountHyphenSkip:
+	bne $t0, 1, _XuatTop10.GetNumSkip # Kiem tra count'-' != 1 thi Skip
+	# Khong thi thuc hien rut trich so nguyen
+	addi $t3, $t3, -48
+	add $t1, $t1, $t3
+	mult $t1, $t2
+	mflo $t1 # t1 = t1 * 10
+_XuatTop10.GetNumSkip:
+	addi $s0, $s0, 1 # Tang dia chi
+	j _XuatTop10.Loop1
+_XuatTop10.Exit:
+	# Dua du lieu cuoi vao list_diemso_ngchoi
+	div $t1, $t2
+	mflo $t1
+	sw $t1, ($s2)
+	
+	move $s2, $s6 # Reset dia chi
+	
+	# Sap xep giam dan
 	
