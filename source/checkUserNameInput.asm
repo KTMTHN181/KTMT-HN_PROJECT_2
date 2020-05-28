@@ -1,8 +1,9 @@
 .data
 	inputLabel: .asciiz "Oops. We do not have any thing about you. Let's introduction with each other, I'm the one who try to hang you and you is: "
-	conditionalLabel: .asciiz "\n\nAh, don't forget the first rule in this game: You name must containt only: A-Z, a-z, 0-9. Ok, your name is: "
+	conditionalLabel: .asciiz "\n\nAh, don't forget the first rule in this game: Your name must containt only: A-Z, a-z, 0-9. Ok, your name is: "
 	wrongInputLabel: .asciiz "\nOh no, your name have some characters out of: A-Z, a-z, 0-9. Don't worry, just input again ;)"
-	inputOkLabel: .asciiz "Welcome. The stage is yours now!"
+	inputOkLabel: .asciiz "Welcome "
+	welcomeLabel: .asciiz "The stage is yours now!"
 	theWrongIs: .asciiz "\nThis one is wrong: "
 	downLine: .asciiz "\n"
 	username: .space 50
@@ -89,6 +90,17 @@ _InputName.End:
 	addi $v0, $zero, 4 
 	la $a0, inputOkLabel
 	syscall
+
+	#Print username
+	addi $v0, $zero, 4 
+	la $a0, username
+	syscall
+
+	#Print welcomeLabel
+	addi $v0, $zero, 4 
+	la $a0, welcomeLabel
+	syscall
+
 
 	lw $ra, ($sp)
 	addi $sp, $sp, 4
@@ -188,16 +200,18 @@ ContinueCheckChar:
 	beq $s0,'\0',_CheckChar.Right
 	j ContinueCheckChar1
 ContinueCheckChar1:
+#Test
 	#print the normal char
-	addi $v0, $zero, 11
+#	addi $v0, $zero, 11
 	#addi $s0,$s0,32
-	add $a0, $s0, $zero
-	syscall
+#	add $a0, $s0, $zero
+#	syscall
 
 	#Print test
-	addi $v0, $zero, 4 
-	la $a0, test
-	syscall
+#	addi $v0, $zero, 4 
+#	la $a0, test
+#	syscall
+#EndTest
 
 	move $s0, $a1
 	#If code <= 57
