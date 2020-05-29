@@ -11,9 +11,21 @@ main:
 	# Khoi tao count_debai_old = 0
 	sw $0, count_debai_old
 	
+	# Doc va count so de thi
 	la $a0, list_debai
 	jal _ReadDeThi
 	sw $v0, count_debai
+	
+	# Test lay random de thi
+	la $a0, list_debai
+	la $a1, count_debai_old
+	la $a2, debai_old
+	lw $a3, count_debai
+	jal _GetDeThi
+	
+	li $v0, 4
+	la $a0, debai
+	syscall
 	
 	la $a0, list_debai
 	la $a1, count_debai_old
@@ -100,17 +112,17 @@ _ReadDeThi.Exit_Count:
 # Truyen vao tham so a3 = Gia tri count_debai (so luong de bai)
 _GetDeThi:
 # Dau thu tuc
-	addi $sp, $sp, -32
+	addi $sp, $sp, -36
 	sw $ra, ($sp)
 	sw $s0, 4($sp)
 	sw $t0, 8($sp)
 	sw $s3, 12($sp)
 	sw $s1, 16($sp)
 	sw $s2, 20($sp)
-	sw $t1, 20($sp)
-	sw $t2, 24($sp)
-	sw $t3, 28($sp)
-	sw $t4, 32($sp)
+	sw $t1, 24($sp)
+	sw $t2, 28($sp)
+	sw $t3, 32($sp)
+	sw $t4, 36($sp)
 	
 # Than thu tuc
 	# Truyen tham so
@@ -120,7 +132,7 @@ _GetDeThi:
 	move $s3, $a3 # Gia tri count_debai
 	
 	# Random number 0 <= [int] < a1
-	move $t2, $s2 # Back up Dia chi debai_old
+	move $t4, $s2 # Back up Dia chi debai_old
 _GetDeThi.Loop0:	
 	li $v0, 42
 	li $a0, 0 # Set seed
@@ -130,7 +142,7 @@ _GetDeThi.Loop0:
 	# Kiem tra xem co trung de bai cu
 	lw $t2, ($s1)
 	beqz $t2, _GetDeThi.Skip_Repeat # Kiem tra t2 == 0 thi skip
-	move $s2, $t2
+	move $s2, $t4 # Reset Dia chi debai_old
 	li $t3, 0 # Khoi tao index i
 _GetDeThi.Loop1:	
 	lw $t0, ($s2)
