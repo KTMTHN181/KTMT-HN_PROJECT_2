@@ -21,11 +21,16 @@
 
 	
 
-#Thuat toan: 1. Nhap ten 2.L?p qua tung char. moi char lai truyen vao ham kiem tra, neu dung di tiep(ket thuc ham), neu sai thong bao sai,
-# quay lai 1
-# 3. Neu dung het thi ket thuc lap, tra ve ra.
+# Thuat toan:
+# 1.	Nhap ten
+# 2.	Lap qua tung char. moi char lai truyen vao ham kiem tra, neu dung di tiep 
+# 	(ket thuc ham), neu sai thong bao sai, quay lai 1
+# 3.	Neu dung het thi ket thuc lap, tra ve ra.
 	li $v0,10
 	syscall
+
+#load so lan doan sai vao $a0
+#roi goi _printHangProcess de in ra hinh nhan
 
 _printHangProcess:
 
