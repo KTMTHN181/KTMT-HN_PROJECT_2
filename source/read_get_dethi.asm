@@ -11,7 +11,7 @@ main:
 	# Khoi tao count_debai_old = 0
 	sw $0, count_debai_old
 	
-	# Doc va count so de thi
+	# Doc va count so de thi/ Ket qua tra ve la so luong debai
 	la $a0, list_debai
 	jal _ReadDeThi
 	sw $v0, count_debai
@@ -27,19 +27,53 @@ main:
 	la $a0, debai
 	syscall
 	
-	la $a0, list_debai
-	la $a1, count_debai_old
-	la $a2, debai_old
-	lw $a3, count_debai
-	jal _GetDeThi
-	
-	li $v0, 4
+	# Get length debai/ Ket qua tra ve la so ki tu
 	la $a0, debai
+	jal _GetLength
+	move $a0, $v0
+	li $v0, 1
 	syscall
 	
 	#ket thuc
 	li $v0,10
 	syscall
+	
+# ---------------- Get Length ----------------
+# Truyen vao tham so a0 = Dia chi debai
+# Ket qua tra ve la length/so ki tu
+_GetLength:
+# Dau thu tuc
+	addi $sp, $sp, -12
+	sw $ra, ($sp)
+	sw $s0, 4($sp)
+	sw $t0, 8($sp)
+	sw $t1, 12($sp)
+	
+# Than thu tuc
+	# Truyen tham so
+	move $s0, $a0 # Dia chi debai
+	
+	# Tien hanh dem so ki tu
+	li $t0, 0 # Khoi tao count = 0
+_GetLength_Loop0:
+	lb $t1, ($s0)
+	beqz $t1, _GetLength_Exit # Kiem tra t1 == '\0' thi exit
+	# Khong thi tang dem va tiep tuc loop
+	addi $t0, $t0, 1
+	addi $s0, $s0, 1
+	j _GetLength_Loop0
+_GetLength_Exit:
+
+	# Tra ket qua la length/so ki tu
+	move $v0, $t0
+	
+# Cuoi thu tuc
+	lw $ra, ($sp)
+	lw $s0, 4($sp)
+	lw $t0, 8($sp)
+	lw $t1, 12($sp)
+	addi $sp, $sp, 12
+	jr $ra
 
 # ---------------- Read De Thi ----------------
 # Truyen vao tham so a0 = Dia chi list_debai
