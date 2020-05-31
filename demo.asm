@@ -391,3 +391,36 @@ _exitTurn:
 _exit:
 	li $v0,10
 	syscall
+
+##########################################################################
+##								OutputFile								##
+##########################################################################
+
+
+
+.data
+fout: .asciiz "data:\\ketqua.txt"
+thongbao: .asciiz "So cau lam duoc: "
+
+# s0 luu so cau tra loi dung
+
+
+.text
+addi $s0,$zero,0 # TAM LUU SO CAU TRA LOI DUNG LA 0 CAU, SAU SUA LAI DE DOI THANH BIEN CHUA SO CAU TRA LOI DUNG (MOVE $S0,BIEN LUU))
+# Mo file
+li   $v0, 13      
+la   $a0, fout    
+li   $a1, 1       
+li   $a2, 0       
+syscall           
+move $s6, $v0      
+# Ghi file
+addi $v0,$zero,4
+la $a0,thongbao
+addi $v0,$zero,1
+move $a0,$s0
+syscall            # write to file
+# Dong file
+li   $v0, 16      
+move $a0, $s6   
+syscall 
