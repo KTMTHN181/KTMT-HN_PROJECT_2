@@ -56,6 +56,7 @@ sub $t3 $t0 $t1
 	file_nguoichoi:	.asciiz "data\\nguoichoi.txt"
 	strCorrect: .asciiz "Ban da doan dung tu!\n"
 	strIncorrect: .asciiz "Ban da doan sai! \n-----NUOC MAT ANH ROI-----\n----CUOC CHOI KET THUC----\n"
+	strIncorrect2: .asciiz "Tu ma ban da doan sai la: "
 	strScore: .asciiz "So diem hien tai cua ban la: "
 	strLose: .asciiz "So diem cuoi cung cua ban la: "
 	strHighScore: .asciiz "Chuc mung! Ban vua xac lap ki luc diem cao moi nhat!\n"	
@@ -392,6 +393,7 @@ while_GuessString:
 	j while_GuessString
 	
 exit_GuessString:
+	sb $zero, 0($t0)
 	li $v0, 4
 	la $a0, enter
 	syscall
@@ -839,6 +841,9 @@ _game.correctGuess:
 	la $a0, strCorrect
 	syscall
 	
+	#SOUND GOOD
+	jal soundGood
+	
 	# +length pts
 	la $a0, currentScore
 	lw $a1, currentScore
@@ -878,6 +883,23 @@ _game.incorrectGuess:
 	li $v0, 4
 	la $a0, strIncorrect
 	syscall
+	
+	#print word
+	li $v0, 4
+	la $a0, strIncorrect2
+	syscall
+	
+	li $v0, 4
+	la $a0, debai
+	syscall
+
+	#prints newline
+	li $v0, 4
+	la $a0, enter
+	syscall
+
+	#sound bad
+	jal soundBad
 
 	#prints current score string
 	li $v0, 4
@@ -1059,6 +1081,40 @@ next2:
 	lw   $t0, ($sp)           # restore $t0 value before function was called
 	addi $sp, $sp, 4          # restore stack
 	jr  $ra                   # jump to caller	
+	
+	
+	
+##############SOUND##################
+soundBad:
+
+	li $v0, 31	#Number for syscall
+	li $a0, 40	#Pitch
+	li $a1, 1000	#Duration
+	li $a2, 56	#Instrument
+	li $a3, 127	#Volume
+	syscall
+
+	jr $31
+
+soundGood:
+
+	li $v0, 33	#Number for syscall
+	li $a0, 62	#Pitch
+	li $a1, 250	#Duration
+	li $a2, 0	#Instrument
+	li $a3, 127	#Volume
+	syscall
+
+	li $v0, 31	#Number for syscall
+	li $a0, 67	#Pitch
+	li $a1, 1000	#Duration
+	li $a2, 0	#Instrument
+	li $a3, 127	#Volume
+	syscall
+
+	jr $31
+###########################################
+
 ###################################################### HANGMAN - IN TOP 10 #########################################################			
 
 # ---------------- Sort Descending ----------------
@@ -1337,6 +1393,9 @@ _exitHangMan:
 	li $v0, 4
 	la $a0, strGoodbye
 	syscall
+	
+	li $v0, 12 # sys code for readchar
+    	syscall
 	
 	li $v0,10
 	syscall
