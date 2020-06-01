@@ -276,7 +276,7 @@ _game.incorrectGuessWriteFile:
   	move $a0, $s6		# file descriptor to close
   	syscall			# close file
   	
-	j _exit
+	j _game.continueQuery:
 
 _game.continueQuery:
 	#ask if player wants to continue
