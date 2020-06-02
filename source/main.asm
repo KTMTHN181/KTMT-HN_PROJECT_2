@@ -88,7 +88,34 @@ main:
 
 _game.Login:
 	jal _InputName
+	
 _game.Restart:
+	# Khoi tao count_debai_old = 0
+	sw $0, count_debai_old
+	
+	# Doc va count so de thi
+	la $a0, list_debai
+	jal _ReadDeThi
+	sw $v0, count_debai
+	
+	# Test lay random de thi
+	la $a0, list_debai
+	la $a1, count_debai_old
+	la $a2, debai_old
+	lw $a3, count_debai
+	jal _GetDeThi
+	
+	
+	la $a0, debai
+	jal _GetLength
+	sw $v0, length #luu length
+
+	#khoi tao bien dem so lan sai
+	sw $0, soLanDoanSai
+	sw $0, soKiTuDaDoan
+	j _reset
+
+_game.Reset: #restart cu
 	# Khoi tao trang thai game
 	sw $0, currentScore
 	sw $0, correctGuesses
@@ -879,6 +906,18 @@ _game.correctGuess:
 
 #tra loi sai goi ham nay
 _game.incorrectGuess:
+	#prints newline
+	li $v0, 4
+	la $a0, enter
+	syscall
+	
+	#print man
+	addi $a0, $zero, 7
+	#sw $a0, soLanDoanSai
+	#j _inputHangProcess
+	jal _printHangProcess
+	
+
 	#prints game over string
 	li $v0, 4
 	la $a0, strIncorrect
@@ -1027,7 +1066,7 @@ _game.continueQuery:
 	j _exit
 
 _game.newGame:
-	j _game.Restart
+	j _game.Reset
 _exit:
 	j _exitHangMan
 	
